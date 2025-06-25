@@ -164,7 +164,7 @@ const About = () => {
             </p>
 
             <p>
-              I also work as a part-time STEM teacher at <a href="https://www.viaschool.ca/">VIA</a>{' '}
+              I also work as a part-time STEM teacher at <a href="http://itorontoacademy.com">TIA</a>{' '}
               and <a href="https://inteledu.ca/en/home.html">IIE</a> that covers everything in
               Mathematics, Statistics, Physics, and Computer Science in AP courses and OSSD
               curriculum.
