@@ -1,0 +1,70 @@
+╭─── Claude Code v2.1.89 ──────────────────────────────────────────────────────╮
+│                                                    │ Tips for getting        │
+│                 Welcome back Jadyn!                │ started                 │
+│                                                    │ Run /init to create a … │
+│                       ▐▛███▜▌                      │ ─────────────────────── │
+│                      ▝▜█████▛▘                     │ Recent activity         │
+│                        ▘▘ ▝▝                       │ No recent activity      │
+│        Opus 4.6 (1M context) · Claude Max ·        │                         │
+│        jadyn.hwu@gmail.com's Organization          │                         │
+│             ~/Development/JadynWu-site             │                         │
+╰──────────────────────────────────────────────────────────────────────────────╯
+
+⏺ ★ Insight ─────────────────────────────────────
+  IthacaServer 的 static-site 部署模型: 只需一个 Nginx 容器，通过 Traefik labels
+   注册路由规则。Traefik 自动申请 Let's Encrypt SSL，HTTP→HTTPS 重定向，加上
+  secure-headers 中间件（HSTS、X-Content-Type-Nosniff、CSP）。整个站点资源占用仅
+   128MB + 0.25 CPU。
+
+  Gatsby 的缓存策略: Gatsby 构建时对 JS/CSS 文件名加 content hash（如
+  app-abc123.js），所以 nginx 配置中 expires 1y; Cache-Control: public, 
+  immutable 是安全的——文件内容变化时文件名也变，不会有缓存过期问题。
+  ─────────────────────────────────────────────────
+
+  ---
+  全部完成。以下是变更总结：
+
+  JadynWu-site（分支 deploy/ithaca）
+
+  ┌───────────────┬──────────────────────────────────────────────────────────┐
+  │     文件      │                           用途                           │
+  ├───────────────┼──────────────────────────────────────────────────────────┤
+  │ Dockerfile    │ 多阶段构建：Node 20 装依赖 → yarn build → 将 public/     │
+  │               │ 复制到 nginx:alpine                                      │
+  ├───────────────┼──────────────────────────────────────────────────────────┤
+  │ .dockerignore │ 排除 node_modules, .cache, public, .git 等               │
+  └───────────────┴──────────────────────────────────────────────────────────┘
+
+  IthacaServer（apps/jadynwu-site/）
+
+  ┌───────────────────────┬──────────────────────────────────────────────────┐
+  │         文件          │                       用途                       │
+  ├───────────────────────┼──────────────────────────────────────────────────┤
+  │ docker-compose.yml    │ 单服务 static-site，Traefik 路由 + 健康检查 +    │
+  │                       │ 安全加固                                         │
+  ├───────────────────────┼──────────────────────────────────────────────────┤
+  │ app.conf              │ git-source 类型，指向 YuudachiXMMY/JadynWu 的    │
+  │                       │ deploy/ithaca 分支                               │
+  ├───────────────────────┼──────────────────────────────────────────────────┤
+  │ .env                  │ 域名配置（占位符                                 │
+  │                       │ jadynwu.example.com，部署前需改）                │
+  ├───────────────────────┼──────────────────────────────────────────────────┤
+  │ config/Dockerfile.web │ IthacaServer 约定的多阶段构建（source/           │
+  │                       │ 前缀路径）                                       │
+  ├───────────────────────┼──────────────────────────────────────────────────┤
+  │ config/nginx.conf     │ SPA 回退、静态资源 1 年缓存、dotfile             │
+  │                       │ 拦截、/health 端点                               │
+  ├───────────────────────┼──────────────────────────────────────────────────┤
+  │ docs/APP-REGISTRY.md  │ 已更新注册表和资源预算                           │
+  └───────────────────────┴──────────────────────────────────────────────────┘
+
+  部署步骤
+
+  1. 将 deploy/ithaca 分支 push 到 GitHub
+  2. 修改 IthacaServer/apps/jadynwu-site/.env 中的 DOMAIN 为实际域名
+  3. 配置 DNS A 记录指向服务器 IP
+  4. 运行 ./scripts/deploy.sh jadynwu-site
+
+  需要我提交这些变更吗？
+
+✻ Cooked for 7m 22s
